@@ -25,12 +25,16 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log("hola")
-
+    const params = new URLSearchParams(window.location.search)
+    const _params = {}
+    for (const param of params) {
+      const [key, value ]= param
+      _params[key] = value
+    }
+    console.log(_params)
     socket
-      .on('init', ({ id: clientId }) => {
-        document.title = `${clientId} - VideoCall`;
-        this.setState({ clientId });
+      .on('init', () => {
+        this.setState({ clientId: _params.uid });
       })
       .on('request', ({ from: callFrom }) => {
         this.setState({ callModal: 'active', callFrom });
