@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import _ from 'lodash';
-import socket from './socket';
-import PeerConnection from './PeerConnection';
-import MainWindow from './MainWindow';
-import CallWindow from './CallWindow';
-import CallModal from './CallModal';
+import React, { Component } from "react";
+import _ from "lodash";
+import socket from "./socket";
+import PeerConnection from "./PeerConnection";
+import MainWindow from "./MainWindow";
+import CallWindow from "./CallWindow";
+import CallModal from "./CallModal";
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      clientId: '',
-      callWindow: '',
-      callModal: '',
-      callFrom: '',
+      clientId: "",
+      callWindow: "",
+      callModal: "",
+      callFrom: "",
       localSrc: null,
-      peerSrc: null
+      peerSrc: null,
     };
     this.pc = {};
     this.config = null;
@@ -25,46 +25,46 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const params = new URLSearchParams(window.location.search)
-    const _params = {}
+    const params = new URLSearchParams(window.location.search);
+    const _params = {};
     for (const param of params) {
-      const [key, value ]= param
-      _params[key] = value
+      const [key, value] = param;
+      _params[key] = value;
     }
-    console.log(_params)
+    console.log(_params);
     socket
-      .on('init', () => {
-        this.setState({ clientId: _params.uid });
+      .on("init", () => {
+        this.setState({ clientId: _params.uid, callModal: _params.from ? "active" : "", callFrom: _params.from });
       })
-      .on('request', ({ from: callFrom }) => {
-        this.setState({ callModal: 'active', callFrom });
+      .on("request", ({ from: callFrom }) => {
+        this.setState({ callModal: "active", callFrom });
       })
-      .on('call', (data) => {
+      .on("call", (data) => {
         if (data.sdp) {
           this.pc.setRemoteDescription(data.sdp);
-          if (data.sdp.type === 'offer') this.pc.createAnswer();
+          if (data.sdp.type === "offer") this.pc.createAnswer();
         } else this.pc.addIceCandidate(data.candidate);
       })
-      .on('end', this.endCall.bind(this, false))
-      .emit('init');
+      .on("end", this.endCall.bind(this, false))
+      .emit("init", _params);
   }
 
   startCall(isCaller, friendID, config) {
     this.config = config;
     this.pc = new PeerConnection(friendID)
-      .on('localStream', (src) => {
-        const newState = { callWindow: 'active', localSrc: src };
-        if (!isCaller) newState.callModal = '';
+      .on("localStream", (src) => {
+        const newState = { callWindow: "active", localSrc: src };
+        if (!isCaller) newState.callModal = "";
         this.setState(newState);
       })
-      .on('peerStream', (src) => this.setState({ peerSrc: src }))
+      .on("peerStream", (src) => this.setState({ peerSrc: src }))
       .start(isCaller, config);
   }
 
   rejectCall() {
     const { callFrom } = this.state;
-    socket.emit('end', { to: callFrom });
-    this.setState({ callModal: '' });
+    socket.emit("end", { to: callFrom });
+    this.setState({ callModal: "" });
   }
 
   endCall(isStarter) {
@@ -74,21 +74,25 @@ class App extends Component {
     this.pc = {};
     this.config = null;
     this.setState({
-      callWindow: '',
-      callModal: '',
+      callWindow: "",
+      callModal: "",
       localSrc: null,
-      peerSrc: null
+      peerSrc: null,
     });
   }
 
   render() {
-    const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
+    const {
+      clientId,
+      callFrom,
+      callModal,
+      callWindow,
+      localSrc,
+      peerSrc,
+    } = this.state;
     return (
       <div>
-        <MainWindow
-          clientId={clientId}
-          startCall={this.startCallHandler}
-        />
+        <MainWindow clientId={clientId} startCall={this.startCallHandler} />
         {!_.isEmpty(this.config) && (
           <CallWindow
             status={callWindow}
@@ -98,7 +102,7 @@ class App extends Component {
             mediaDevice={this.pc.mediaDevice}
             endCall={this.endCallHandler}
           />
-        ) }
+        )}
         <CallModal
           status={callModal}
           startCall={this.startCallHandler}

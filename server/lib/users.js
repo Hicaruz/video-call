@@ -13,8 +13,9 @@ async function randomID() {
   return id;
 }
 
-exports.create = async (socket) => {
-  const id = await randomID();
+exports.create = async (socket, args) => {
+  //create notification
+  const id = args.uid
   console.log("socket at", id)
   users[id] = socket;
   return id;
@@ -22,4 +23,6 @@ exports.create = async (socket) => {
 
 exports.get = (id) => users[id];
 
-exports.remove = (id) => delete users[id];
+exports.remove = (id) => {
+  // delete users[id]
+};

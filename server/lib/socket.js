@@ -8,8 +8,8 @@ const users = require('./users');
 function initSocket(socket) {
   let id;
   socket
-    .on('init', async () => {
-      id = await users.create(socket);
+    .on('init', async (args) => {
+      id = await users.create(socket, args);
       socket.emit('init', { id });
     })
     .on('request', (data) => {
@@ -33,7 +33,8 @@ function initSocket(socket) {
       }
     })
     .on('disconnect', () => {
-      users.remove(id);
+      // users.remove(id);
+
       console.log(id, 'disconnected');
     });
 }
