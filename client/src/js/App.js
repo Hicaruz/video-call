@@ -25,6 +25,8 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log("hola")
+
     socket
       .on('init', ({ id: clientId }) => {
         document.title = `${clientId} - VideoCall`;
