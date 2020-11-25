@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 function MainWindow({ startCall }) {
-  const params = new URLSearchParams(window.location.search)
-  const _params = {}
+  const params = new URLSearchParams(window.location.search);
+  const _params = {};
   for (const param of params) {
-    const [key, value ]= param
-    _params[key] = value
+    const [key, value] = param;
+    _params[key] = value;
   }
-  console.log(_params)
+  console.log(_params);
   const callWithVideo = (video) => {
     const config = { audio: true, video };
     return () => startCall(true, _params.user, config);
@@ -51,6 +51,7 @@ function MainWindow({ startCall }) {
           </div>
         </div>
       </div>
+      <small className="text-muted">im {_params.uid}</small>
     </div>
   );
 }

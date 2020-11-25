@@ -9,6 +9,7 @@ function initSocket(socket) {
   let id;
   socket
     .on('init', async () => {
+      console.log("init")
       id = await users.create(socket);
       socket.emit('init', { id });
     })
