@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-function MainWindow({ startCall, clientId }) {
-  const [friendID, setFriendID] = useState(null);
+function MainWindow({ startCall }) {
   const params = new URLSearchParams(window.location.search)
   const _params = {}
   for (const param of params) {
@@ -12,7 +11,7 @@ function MainWindow({ startCall, clientId }) {
   console.log(_params)
   const callWithVideo = (video) => {
     const config = { audio: true, video };
-    return () => friendID && startCall(true, friendID, config);
+    return () => startCall(true, _params.user, config);
   };
 
   return (
